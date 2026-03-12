@@ -60,16 +60,30 @@ font-size:22px;
 
 function buscar(){
 
-let ref = document.getElementById("ref").value
+let ref = document.getElementById("ref").value.trim()
 let refCodificada = encodeURIComponent(ref)
 
-fetch("https://bible-api.com/"+refCodificada+"?translation=rvr1960")
+fetch("https://bible-api.com/" + refCodificada)
 .then(res => res.json())
 .then(data => {
 
-document.getElementById("verso").innerText = data.text
+if(data.text){
 
-document.getElementById("cita").innerText = data.reference + " (RVR1960)"
+document.getElementById("verso").innerText = data.text
+document.getElementById("cita").innerText = data.reference
+
+}else{
+
+document.getElementById("verso").innerText = "No se encontró el versículo"
+document.getElementById("cita").innerText = ""
+
+}
+
+})
+.catch(error => {
+
+document.getElementById("verso").innerText = "Error al buscar el versículo"
+document.getElementById("cita").innerText = ""
 
 })
 
