@@ -21,7 +21,7 @@ margin-bottom:40px;
 input{
 font-size:22px;
 padding:12px;
-width:260px;
+width:280px;
 }
 
 button{
@@ -92,6 +92,51 @@ display:block;
 
 <script>
 
+/* Traducción de libros español → inglés */
+
+const libros = {
+"Juan":"John",
+"Romanos":"Romans",
+"Salmos":"Psalms",
+"Génesis":"Genesis",
+"Genesis":"Genesis",
+"Mateo":"Matthew",
+"Marcos":"Mark",
+"Lucas":"Luke",
+"Hechos":"Acts",
+"1 Corintios":"1 Corinthians",
+"2 Corintios":"2 Corinthians",
+"Gálatas":"Galatians",
+"Efesios":"Ephesians",
+"Filipenses":"Philippians",
+"Colosenses":"Colossians",
+"Hebreos":"Hebrews",
+"Santiago":"James",
+"1 Pedro":"1 Peter",
+"2 Pedro":"2 Peter",
+"1 Juan":"1 John",
+"2 Juan":"2 John",
+"3 Juan":"3 John",
+"Apocalipsis":"Revelation"
+}
+
+function traducir(ref){
+
+for(let libro in libros){
+
+if(ref.startsWith(libro)){
+
+ref = ref.replace(libro, libros[libro])
+break
+
+}
+
+}
+
+return ref
+
+}
+
 function ajustarTamano(texto){
 
 let longitud = texto.length
@@ -114,11 +159,13 @@ verso.style.fontSize = "28px"
 
 function buscar(){
 
-let ref = document.getElementById("ref").value.trim()
+let refOriginal = document.getElementById("ref").value.trim()
 
-if(!ref) return
+if(!refOriginal) return
 
-let url = "https://biblia-api.vercel.app/api/" + encodeURIComponent(ref)
+let ref = traducir(refOriginal)
+
+let url = "https://bible-api.deno.dev/api/read/RVR1960/" + encodeURIComponent(ref)
 
 fetch(url)
 
@@ -131,18 +178,13 @@ if(data.text){
 let texto = data.text
 
 document.getElementById("verso").innerText = texto
-
-document.getElementById("cita").innerText =
-ref + " (RVR1960)"
+document.getElementById("cita").innerText = refOriginal + " (RVR1960)"
 
 ajustarTamano(texto)
 
-}
-else{
+}else{
 
-document.getElementById("verso").innerText =
-"No se encontró el versículo"
-
+document.getElementById("verso").innerText = "No se encontró el versículo"
 document.getElementById("cita").innerText = ""
 
 }
@@ -151,9 +193,7 @@ document.getElementById("cita").innerText = ""
 
 .catch(() => {
 
-document.getElementById("verso").innerText =
-"Error al buscar el versículo"
-
+document.getElementById("verso").innerText = "Error al buscar el versículo"
 document.getElementById("cita").innerText = ""
 
 })
