@@ -70,11 +70,11 @@ fetch("https://bible-api.com/" + refCodificada)
 if(data.text){
 
 document.getElementById("verso").innerText = data.text
-document.getElementById("cita").innerText = data.reference
+document.getElementById("cita").innerText = data.reference + " (RVR1960)"
 
 }else{
 
-document.getElementById("verso").innerText = "No se encontró el versículo"
+document.getElementById("verso").innerText = data.error || "No se encontró el versículo"
 document.getElementById("cita").innerText = ""
 
 }
