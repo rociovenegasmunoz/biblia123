@@ -1,70 +1,89 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
-<title>Versículos Bíblicos</title>
+<title>Biblia Proyector</title>
 
 <style>
 
 body{
-background:white;
-color:black;
-font-family: Arial, sans-serif;
+font-family: Arial;
+background:#111;
+color:white;
+margin:0;
 text-align:center;
-padding:40px;
 }
 
-#controles{
-margin-bottom:40px;
+#buscador{
+padding:20px;
+background:#222;
 }
 
 input{
-font-size:22px;
-padding:12px;
-width:280px;
+padding:10px;
+font-size:18px;
+width:200px;
 }
 
 button{
-font-size:18px;
-padding:10px 20px;
-margin:10px;
+padding:10px 15px;
+font-size:16px;
+margin:5px;
 cursor:pointer;
 }
 
-#verso{
-font-size:60px;
-margin-top:60px;
-max-width:1000px;
-margin-left:auto;
-margin-right:auto;
-line-height:1.4;
-transition:font-size 0.3s;
-white-space:pre-line;
+#resultado{
+padding:30px;
 }
 
 #cita{
-margin-top:40px;
-font-size:28px;
-opacity:0.8;
+font-size:20px;
+opacity:.8;
+}
+
+#verso{
+margin-top:20px;
+font-size:48px;
+line-height:1.4;
+max-width:900px;
+margin-left:auto;
+margin-right:auto;
+}
+
+#proyector{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:white;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+padding:60px;
 }
 
 #volver{
-position:fixed;
+position:absolute;
 top:20px;
 right:20px;
-font-size:28px;
-background:white;
-border:none;
+font-size:30px;
 cursor:pointer;
-display:none;
 }
 
-.proyeccion #controles{
-display:none;
+#proyectorVerso{
+font-size:80px;
+max-width:1200px;
+line-height:1.4;
 }
 
-.proyeccion #volver{
-display:block;
+#proyectorCita{
+margin-top:40px;
+font-size:30px;
+opacity:.7;
 }
 
 </style>
@@ -72,146 +91,176 @@ display:block;
 
 <body>
 
-<button id="volver" onclick="salirProyeccion()">↩</button>
+<div id="buscador">
 
-<div id="controles">
-
-<h2>Buscar versículo</h2>
+<h2>Biblia</h2>
 
 <input id="ref" placeholder="Ej: Juan 3:16">
 
-<br>
-
 <button onclick="buscar()">Buscar</button>
-<button onclick="pantalla()">Pantalla completa</button>
-<button onclick="modoProyeccion()">Modo proyección</button>
+
+<button onclick="modoProyector()">Proyectar</button>
 
 </div>
 
-<div id="verso"></div>
+<div id="resultado">
+
 <div id="cita"></div>
+
+<div id="verso"></div>
+
+</div>
+
+
+<div id="proyector">
+
+<div id="volver" onclick="salirProyector()">↩</div>
+
+<div id="proyectorVerso"></div>
+
+<div id="proyectorCita"></div>
+
+</div>
+
 
 <script>
 
-/* traducción de libros español → inglés */
+function normalizarLibro(nombre){
 
-const libros = {
-"Juan":"John",
-"Romanos":"Romans",
-"Salmos":"Psalms",
-"Génesis":"Genesis",
-"Mateo":"Matthew",
-"Marcos":"Mark",
-"Lucas":"Luke",
-"Hechos":"Acts",
-"Apocalipsis":"Revelation"
+nombre = nombre.toLowerCase()
+
+nombre = nombre.replace("á","a")
+nombre = nombre.replace("é","e")
+nombre = nombre.replace("í","i")
+nombre = nombre.replace("ó","o")
+nombre = nombre.replace("ú","u")
+
+nombre = nombre.replace(" ","_")
+
+return nombre
+
 }
 
-/* tamaño automático */
+
+
+async function buscar(){
+
+let ref = document.getElementById("ref").value.trim()
+
+if(!ref) return
+
+let partes = ref.split(" ")
+
+let libro = normalizarLibro(partes[0])
+
+let capVers = partes[1].split(":")
+
+let capitulo = parseInt(capVers[0]) - 1
+
+let versiculo = capVers[1]
+
+let rango = versiculo.split("-")
+
+let vInicio = parseInt(rango[0]) - 1
+
+let vFin = rango[1] ? parseInt(rango[1]) - 1 : vInicio
+
+let archivo = "biblia/" + libro + ".json"
+
+try{
+
+let res = await fetch(archivo)
+
+let data = await res.json()
+
+let cap = data[capitulo]
+
+let texto = ""
+
+for(let i=vInicio;i<=vFin;i++){
+
+texto += (i+1) + ". " + cap[i] + " "
+
+}
+
+document.getElementById("verso").innerText = texto
+
+document.getElementById("cita").innerText = ref + " (RVR1960)"
+
+ajustarTamano(texto)
+
+}catch{
+
+document.getElementById("verso").innerText = "Error al buscar el versículo"
+
+document.getElementById("cita").innerText = ""
+
+}
+
+}
+
+
 
 function ajustarTamano(texto){
 
 let largo = texto.length
-let v = document.getElementById("verso")
 
-if(largo < 120) v.style.fontSize="60px"
-else if(largo < 250) v.style.fontSize="46px"
-else if(largo < 400) v.style.fontSize="36px"
-else v.style.fontSize="28px"
+let size = 48
 
-}
+if(largo > 300) size = 40
+if(largo > 500) size = 32
+if(largo > 800) size = 26
 
-/* traducir referencia */
-
-function traducir(ref){
-
-for(let libro in libros){
-
-if(ref.startsWith(libro)){
-
-ref = ref.replace(libro, libros[libro])
-break
+document.getElementById("verso").style.fontSize = size + "px"
 
 }
 
-}
 
-return ref
 
-}
+function modoProyector(){
 
-/* buscar versículo */
+let verso = document.getElementById("verso").innerText
 
-function buscar(){
+let cita = document.getElementById("cita").innerText
 
-let refOriginal = document.getElementById("ref").value.trim()
+if(!verso) return
 
-if(!refOriginal) return
+document.getElementById("proyectorVerso").innerText = verso
 
-let ref = traducir(refOriginal)
+document.getElementById("proyectorCita").innerText = cita
 
-let url = "https://bible-api.com/" + encodeURIComponent(ref) + "?translation=rvr"
+ajustarTamanoProyector(verso)
 
-fetch(url)
-
-.then(r => r.json())
-
-.then(data => {
-
-if(data.text){
-
-let texto = data.text
-
-document.getElementById("verso").innerText = texto
-document.getElementById("cita").innerText = refOriginal + " (RVR)"
-
-ajustarTamano(texto)
-
-}else{
-
-document.getElementById("verso").innerText = "No se encontró el versículo"
-document.getElementById("cita").innerText = ""
+document.getElementById("proyector").style.display = "flex"
 
 }
 
-})
 
-.catch(() => {
 
-document.getElementById("verso").innerText = "Error al buscar el versículo"
-document.getElementById("cita").innerText = ""
+function ajustarTamanoProyector(texto){
 
-})
+let largo = texto.length
+
+let size = 80
+
+if(largo > 300) size = 60
+if(largo > 500) size = 48
+if(largo > 800) size = 36
+
+document.getElementById("proyectorVerso").style.fontSize = size + "px"
 
 }
 
-/* pantalla completa */
 
-function pantalla(){
-document.documentElement.requestFullscreen()
+
+function salirProyector(){
+
+document.getElementById("proyector").style.display = "none"
+
 }
-
-/* modo proyección */
-
-function modoProyeccion(){
-document.body.classList.add("proyeccion")
-}
-
-function salirProyeccion(){
-document.body.classList.remove("proyeccion")
-}
-
-/* atajos */
-
-document.addEventListener("keydown", function(e){
-
-if(e.key === "Enter") buscar()
-
-if(e.key === "f") pantalla()
-
-})
 
 </script>
 
 </body>
+
 </html>
