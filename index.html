@@ -39,6 +39,7 @@ margin-left:auto;
 margin-right:auto;
 line-height:1.4;
 transition:font-size 0.3s;
+white-space:pre-line;
 }
 
 #cita{
@@ -92,33 +93,35 @@ display:block;
 
 <script>
 
-/* Traducción de libros español → inglés */
+/* traducción de libros español → inglés */
 
 const libros = {
 "Juan":"John",
 "Romanos":"Romans",
 "Salmos":"Psalms",
 "Génesis":"Genesis",
-"Genesis":"Genesis",
 "Mateo":"Matthew",
 "Marcos":"Mark",
 "Lucas":"Luke",
 "Hechos":"Acts",
-"1 Corintios":"1 Corinthians",
-"2 Corintios":"2 Corinthians",
-"Gálatas":"Galatians",
-"Efesios":"Ephesians",
-"Filipenses":"Philippians",
-"Colosenses":"Colossians",
-"Hebreos":"Hebrews",
-"Santiago":"James",
-"1 Pedro":"1 Peter",
-"2 Pedro":"2 Peter",
-"1 Juan":"1 John",
-"2 Juan":"2 John",
-"3 Juan":"3 John",
 "Apocalipsis":"Revelation"
 }
+
+/* tamaño automático */
+
+function ajustarTamano(texto){
+
+let largo = texto.length
+let v = document.getElementById("verso")
+
+if(largo < 120) v.style.fontSize="60px"
+else if(largo < 250) v.style.fontSize="46px"
+else if(largo < 400) v.style.fontSize="36px"
+else v.style.fontSize="28px"
+
+}
+
+/* traducir referencia */
 
 function traducir(ref){
 
@@ -137,25 +140,7 @@ return ref
 
 }
 
-function ajustarTamano(texto){
-
-let longitud = texto.length
-let verso = document.getElementById("verso")
-
-if(longitud < 120){
-verso.style.fontSize = "60px"
-}
-else if(longitud < 250){
-verso.style.fontSize = "46px"
-}
-else if(longitud < 400){
-verso.style.fontSize = "36px"
-}
-else{
-verso.style.fontSize = "28px"
-}
-
-}
+/* buscar versículo */
 
 function buscar(){
 
@@ -165,11 +150,11 @@ if(!refOriginal) return
 
 let ref = traducir(refOriginal)
 
-let url = "https://bible-api.deno.dev/api/read/RVR1960/" + encodeURIComponent(ref)
+let url = "https://bible-api.com/" + encodeURIComponent(ref) + "?translation=rvr"
 
 fetch(url)
 
-.then(res => res.json())
+.then(r => r.json())
 
 .then(data => {
 
@@ -178,7 +163,7 @@ if(data.text){
 let texto = data.text
 
 document.getElementById("verso").innerText = texto
-document.getElementById("cita").innerText = refOriginal + " (RVR1960)"
+document.getElementById("cita").innerText = refOriginal + " (RVR)"
 
 ajustarTamano(texto)
 
@@ -200,9 +185,13 @@ document.getElementById("cita").innerText = ""
 
 }
 
+/* pantalla completa */
+
 function pantalla(){
 document.documentElement.requestFullscreen()
 }
+
+/* modo proyección */
 
 function modoProyeccion(){
 document.body.classList.add("proyeccion")
@@ -211,6 +200,8 @@ document.body.classList.add("proyeccion")
 function salirProyeccion(){
 document.body.classList.remove("proyeccion")
 }
+
+/* atajos */
 
 document.addEventListener("keydown", function(e){
 
