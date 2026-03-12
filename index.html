@@ -58,12 +58,46 @@ font-size:22px;
 
 <script>
 
+  const libros = {
+"Juan":"John",
+"Romanos":"Romans",
+"Salmos":"Psalms",
+"Génesis":"Genesis",
+"Genesis":"Genesis",
+"Mateo":"Matthew",
+"Marcos":"Mark",
+"Lucas":"Luke",
+"Hechos":"Acts",
+"1 Corintios":"1 Corinthians",
+"2 Corintios":"2 Corinthians",
+"Gálatas":"Galatians",
+"Efesios":"Ephesians",
+"Filipenses":"Philippians",
+"Colosenses":"Colossians",
+"Hebreos":"Hebrews",
+"Santiago":"James",
+"1 Pedro":"1 Peter",
+"2 Pedro":"2 Peter",
+"1 Juan":"1 John",
+"2 Juan":"2 John",
+"3 Juan":"3 John",
+"Apocalipsis":"Revelation"
+}
+
 function buscar(){
 
 let ref = document.getElementById("ref").value.trim()
+
+for (let libro in libros){
+if(ref.startsWith(libro)){
+ref = ref.replace(libro, libros[libro])
+break
+}
+}
+
 let refCodificada = encodeURIComponent(ref)
 
-fetch("https://bible-api.com/" + refCodificada)
+fetch("https://bible-api.com/" + refCodificada + "?translation=rvr1960")
 .then(res => res.json())
 .then(data => {
 
@@ -76,6 +110,10 @@ document.getElementById("cita").innerText = data.reference + " (RVR1960)"
 
 document.getElementById("verso").innerText = data.error || "No se encontró el versículo"
 document.getElementById("cita").innerText = ""
+
+}
+
+})
 
 }
 
