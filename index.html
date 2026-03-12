@@ -23,7 +23,7 @@ background:#222;
 input{
 padding:10px;
 font-size:18px;
-width:200px;
+width:220px;
 }
 
 button{
@@ -45,10 +45,11 @@ opacity:.8;
 #verso{
 margin-top:20px;
 font-size:48px;
-line-height:1.4;
+line-height:1.5;
 max-width:900px;
 margin-left:auto;
 margin-right:auto;
+white-space:pre-line;
 }
 
 #proyector{
@@ -69,20 +70,21 @@ padding:60px;
 #volver{
 position:absolute;
 top:20px;
-right:20px;
-font-size:30px;
+right:25px;
+font-size:40px;
 cursor:pointer;
 }
 
 #proyectorVerso{
 font-size:80px;
 max-width:1200px;
-line-height:1.4;
+line-height:1.5;
+white-space:pre-line;
 }
 
 #proyectorCita{
 margin-top:40px;
-font-size:30px;
+font-size:32px;
 opacity:.7;
 }
 
@@ -95,13 +97,14 @@ opacity:.7;
 
 <h2>Biblia</h2>
 
-<input id="ref" placeholder="Ej: Juan 3:16">
+<input id="ref" placeholder="Ej: juan 3:16">
 
 <button onclick="buscar()">Buscar</button>
 
 <button onclick="modoProyector()">Proyectar</button>
 
 </div>
+
 
 <div id="resultado">
 
@@ -110,6 +113,7 @@ opacity:.7;
 <div id="verso"></div>
 
 </div>
+
 
 
 <div id="proyector">
@@ -121,6 +125,7 @@ opacity:.7;
 <div id="proyectorCita"></div>
 
 </div>
+
 
 
 <script>
@@ -179,7 +184,9 @@ let texto = ""
 
 for(let i=vInicio;i<=vFin;i++){
 
-texto += (i+1) + ". " + cap[i] + " "
+let v = cap[i].replace(/^_+|_+$/g,"")
+
+texto += (i+1) + ". " + v + "\n\n"
 
 }
 
@@ -207,9 +214,10 @@ let largo = texto.length
 
 let size = 48
 
-if(largo > 300) size = 40
-if(largo > 500) size = 32
-if(largo > 800) size = 26
+if(largo > 250) size = 40
+if(largo > 450) size = 34
+if(largo > 650) size = 28
+if(largo > 900) size = 24
 
 document.getElementById("verso").style.fontSize = size + "px"
 
@@ -220,13 +228,11 @@ document.getElementById("verso").style.fontSize = size + "px"
 function modoProyector(){
 
 let verso = document.getElementById("verso").innerText
-
 let cita = document.getElementById("cita").innerText
 
 if(!verso) return
 
 document.getElementById("proyectorVerso").innerText = verso
-
 document.getElementById("proyectorCita").innerText = cita
 
 ajustarTamanoProyector(verso)
@@ -243,9 +249,12 @@ let largo = texto.length
 
 let size = 80
 
-if(largo > 300) size = 60
-if(largo > 500) size = 48
-if(largo > 800) size = 36
+if(largo > 200) size = 70
+if(largo > 350) size = 60
+if(largo > 500) size = 50
+if(largo > 700) size = 42
+if(largo > 900) size = 36
+if(largo > 1200) size = 30
 
 document.getElementById("proyectorVerso").style.fontSize = size + "px"
 
@@ -262,5 +271,4 @@ document.getElementById("proyector").style.display = "none"
 </script>
 
 </body>
-
 </html>
