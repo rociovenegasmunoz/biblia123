@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Versículos Bíblicos</title>
+
+<style>
+
+body{
+background:white;
+color:black;
+font-family: "Georgia", serif;
+text-align:center;
+padding:40px;
+}
+
+input{
+font-size:20px;
+padding:10px;
+width:200px;
+}
+
+button{
+font-size:18px;
+padding:10px 20px;
+margin:10px;
+}
+
+#verso{
+font-size:42px;
+margin-top:60px;
+max-width:900px;
+margin-left:auto;
+margin-right:auto;
+}
+
+#cita{
+margin-top:30px;
+font-size:22px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Buscar versículo</h2>
+
+<input id="ref" placeholder="Ej: Juan 3:16">
+
+<br>
+
+<button onclick="buscar()">Buscar</button>
+<button onclick="pantalla()">Pantalla completa</button>
+
+<div id="verso"></div>
+<div id="cita"></div>
+
+<script>
+
+function buscar(){
+
+let ref = document.getElementById("ref").value
+
+fetch("https://bible-api.com/"+ref+"?translation=rvr1960")
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("verso").innerText = data.text
+
+document.getElementById("cita").innerText = data.reference + " (RVR1960)"
+
+})
+
+}
+
+function pantalla(){
+
+document.documentElement.requestFullscreen()
+
+}
+
+</script>
+
+</body>
+</html>
