@@ -32,17 +32,18 @@ cursor:pointer;
 }
 
 #verso{
-font-size:56px;
+font-size:60px;
 margin-top:60px;
 max-width:1000px;
 margin-left:auto;
 margin-right:auto;
 line-height:1.4;
+transition:font-size 0.3s;
 }
 
 #cita{
 margin-top:40px;
-font-size:26px;
+font-size:28px;
 opacity:0.8;
 }
 
@@ -74,49 +75,28 @@ display:none;
 
 <script>
 
-const libros = {
-"Juan":"John",
-"Romanos":"Romans",
-"Salmos":"Psalms",
-"Génesis":"Genesis",
-"Genesis":"Genesis",
-"Mateo":"Matthew",
-"Marcos":"Mark",
-"Lucas":"Luke",
-"Hechos":"Acts",
-"1 Corintios":"1 Corinthians",
-"2 Corintios":"2 Corinthians",
-"Gálatas":"Galatians",
-"Efesios":"Ephesians",
-"Filipenses":"Philippians",
-"Colosenses":"Colossians",
-"Hebreos":"Hebrews",
-"Santiago":"James",
-"1 Pedro":"1 Peter",
-"2 Pedro":"2 Peter",
-"1 Juan":"1 John",
-"2 Juan":"2 John",
-"3 Juan":"3 John",
-"Apocalipsis":"Revelation"
-}
+function ajustarTamano(texto){
 
-let versiculoActual = ""
-let numeroVersiculo = 0
+let longitud = texto.length
+let verso = document.getElementById("verso")
 
-function traducirReferencia(ref){
+if(longitud < 120){
 
-for(let libro in libros){
+verso.style.fontSize = "60px"
 
-if(ref.startsWith(libro)){
+}else if(longitud < 250){
 
-ref = ref.replace(libro, libros[libro])
-break
+verso.style.fontSize = "46px"
+
+}else if(longitud < 400){
+
+verso.style.fontSize = "36px"
+
+}else{
+
+verso.style.fontSize = "28px"
 
 }
-
-}
-
-return ref
 
 }
 
@@ -124,13 +104,9 @@ function buscar(){
 
 let ref = document.getElementById("ref").value.trim()
 
-ref = traducirReferencia(ref)
-
-versiculoActual = ref
-
 let refCodificada = encodeURIComponent(ref)
 
-fetch("https://bible-api.com/" + refCodificada + "?translation=rvr1960")
+fetch("https://bible-api.deno.dev/api/read/RVR1960/" + refCodificada)
 
 .then(res => res.json())
 
@@ -138,18 +114,19 @@ fetch("https://bible-api.com/" + refCodificada + "?translation=rvr1960")
 
 if(data.text){
 
-document.getElementById("verso").innerText = data.text
+let texto = data.text
+
+document.getElementById("verso").innerText = texto
 
 document.getElementById("cita").innerText =
-data.reference + " (RVR1960)"
+ref + " (RVR1960)"
 
-let partes = data.reference.split(":")
-numeroVersiculo = parseInt(partes[1])
+ajustarTamano(texto)
 
 }else{
 
 document.getElementById("verso").innerText =
-data.error || "No se encontró el versículo"
+"No se encontró el versículo"
 
 document.getElementById("cita").innerText = ""
 
@@ -168,42 +145,6 @@ document.getElementById("cita").innerText = ""
 
 }
 
-function siguiente(){
-
-if(!versiculoActual) return
-
-let partes = versiculoActual.split(":")
-
-let libroCap = partes[0]
-numeroVersiculo++
-
-let nuevo = libroCap + ":" + numeroVersiculo
-
-document.getElementById("ref").value = nuevo
-
-buscar()
-
-}
-
-function anterior(){
-
-if(!versiculoActual) return
-
-let partes = versiculoActual.split(":")
-
-let libroCap = partes[0]
-numeroVersiculo--
-
-if(numeroVersiculo < 1) return
-
-let nuevo = libroCap + ":" + numeroVersiculo
-
-document.getElementById("ref").value = nuevo
-
-buscar()
-
-}
-
 function pantalla(){
 
 document.documentElement.requestFullscreen()
@@ -219,10 +160,6 @@ document.body.classList.toggle("proyeccion")
 document.addEventListener("keydown", function(e){
 
 if(e.key === "Enter") buscar()
-
-if(e.key === "ArrowRight") siguiente()
-
-if(e.key === "ArrowLeft") anterior()
 
 if(e.key === "f") pantalla()
 
