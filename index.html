@@ -9,7 +9,7 @@
 body{
 background:white;
 color:black;
-font-family: "Helvetica Neue", Arial, sans-serif;
+font-family: Arial, sans-serif;
 text-align:center;
 padding:40px;
 }
@@ -47,14 +47,31 @@ font-size:28px;
 opacity:0.8;
 }
 
+#volver{
+position:fixed;
+top:20px;
+right:20px;
+font-size:28px;
+background:white;
+border:none;
+cursor:pointer;
+display:none;
+}
+
 .proyeccion #controles{
 display:none;
+}
+
+.proyeccion #volver{
+display:block;
 }
 
 </style>
 </head>
 
 <body>
+
+<button id="volver" onclick="salirProyeccion()">↩</button>
 
 <div id="controles">
 
@@ -81,21 +98,16 @@ let longitud = texto.length
 let verso = document.getElementById("verso")
 
 if(longitud < 120){
-
 verso.style.fontSize = "60px"
-
-}else if(longitud < 250){
-
+}
+else if(longitud < 250){
 verso.style.fontSize = "46px"
-
-}else if(longitud < 400){
-
+}
+else if(longitud < 400){
 verso.style.fontSize = "36px"
-
-}else{
-
+}
+else{
 verso.style.fontSize = "28px"
-
 }
 
 }
@@ -104,9 +116,11 @@ function buscar(){
 
 let ref = document.getElementById("ref").value.trim()
 
-let refCodificada = encodeURIComponent(ref)
+if(!ref) return
 
-fetch("https://bible-api.deno.dev/api/read/RVR1960/" + refCodificada)
+let url = "https://biblia-api.vercel.app/api/" + encodeURIComponent(ref)
+
+fetch(url)
 
 .then(res => res.json())
 
@@ -123,7 +137,8 @@ ref + " (RVR1960)"
 
 ajustarTamano(texto)
 
-}else{
+}
+else{
 
 document.getElementById("verso").innerText =
 "No se encontró el versículo"
@@ -146,15 +161,15 @@ document.getElementById("cita").innerText = ""
 }
 
 function pantalla(){
-
 document.documentElement.requestFullscreen()
-
 }
 
 function modoProyeccion(){
+document.body.classList.add("proyeccion")
+}
 
-document.body.classList.toggle("proyeccion")
-
+function salirProyeccion(){
+document.body.classList.remove("proyeccion")
 }
 
 document.addEventListener("keydown", function(e){
