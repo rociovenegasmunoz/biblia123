@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 <meta charset="UTF-8">
 <title>Biblia Proyector</title>
@@ -8,7 +7,7 @@
 <style>
 
 body{
-font-family: Arial;
+font-family:Arial;
 background:#111;
 color:white;
 margin:0;
@@ -52,6 +51,8 @@ margin-right:auto;
 white-space:pre-line;
 }
 
+/* PROYECTOR */
+
 #proyector{
 display:none;
 position:fixed;
@@ -61,31 +62,39 @@ width:100%;
 height:100%;
 background:black;
 color:white;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-padding:60px;
+overflow:hidden;
 }
 
-#volver{
+#proyectorContenedor{
 position:absolute;
-top:20px;
-right:25px;
-font-size:40px;
-cursor:pointer;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:85%;
+max-height:90vh;
+overflow:hidden;
 }
 
 #proyectorVerso{
-font-size:80px;
-max-width:1200px;
-line-height:1.5;
 white-space:pre-line;
+line-height:1.4;
 }
 
 #proyectorCita{
-margin-top:40px;
-font-size:32px;
+margin-top:30px;
+font-size:30px;
 opacity:.7;
+}
+
+/* botón volver */
+
+#volver{
+position:fixed;
+top:20px;
+right:30px;
+font-size:45px;
+cursor:pointer;
+z-index:10;
 }
 
 </style>
@@ -115,14 +124,17 @@ opacity:.7;
 </div>
 
 
-
 <div id="proyector">
 
 <div id="volver" onclick="salirProyector()">↩</div>
 
+<div id="proyectorContenedor">
+
 <div id="proyectorVerso"></div>
 
 <div id="proyectorCita"></div>
+
+</div>
 
 </div>
 
@@ -194,8 +206,6 @@ document.getElementById("verso").innerText = texto
 
 document.getElementById("cita").innerText = ref + " (RVR1960)"
 
-ajustarTamano(texto)
-
 }catch{
 
 document.getElementById("verso").innerText = "Error al buscar el versículo"
@@ -203,23 +213,6 @@ document.getElementById("verso").innerText = "Error al buscar el versículo"
 document.getElementById("cita").innerText = ""
 
 }
-
-}
-
-
-
-function ajustarTamano(texto){
-
-let largo = texto.length
-
-let size = 48
-
-if(largo > 250) size = 40
-if(largo > 450) size = 34
-if(largo > 650) size = 28
-if(largo > 900) size = 24
-
-document.getElementById("verso").style.fontSize = size + "px"
 
 }
 
@@ -235,28 +228,32 @@ if(!verso) return
 document.getElementById("proyectorVerso").innerText = verso
 document.getElementById("proyectorCita").innerText = cita
 
-ajustarTamanoProyector(verso)
+document.getElementById("proyector").style.display = "block"
 
-document.getElementById("proyector").style.display = "flex"
+ajustarTamanoProyector()
 
 }
 
 
 
-function ajustarTamanoProyector(texto){
+function ajustarTamanoProyector(){
 
-let largo = texto.length
+let texto = document.getElementById("proyectorVerso")
+let contenedor = document.getElementById("proyectorContenedor")
 
-let size = 80
+let size = 120
 
-if(largo > 200) size = 70
-if(largo > 350) size = 60
-if(largo > 500) size = 50
-if(largo > 700) size = 42
-if(largo > 900) size = 36
-if(largo > 1200) size = 30
+texto.style.fontSize = size + "px"
 
-document.getElementById("proyectorVerso").style.fontSize = size + "px"
+while(texto.scrollHeight > contenedor.clientHeight){
+
+size -= 2
+
+texto.style.fontSize = size + "px"
+
+if(size < 20) break
+
+}
 
 }
 
